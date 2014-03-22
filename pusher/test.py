@@ -1,4 +1,4 @@
-import unittest, re, httplib, time, cgi
+import unittest, re, http.client, time, cgi
 from nose.tools import *
 import mox
 
@@ -164,19 +164,19 @@ class ResponsesTest(unittest.TestCase):
 
 
 def stub_connection(moxer, request_args=None, response_status=202, body=''):
-    moxer.StubOutWithMock(httplib.HTTPConnection, '__init__')
-    httplib.HTTPConnection.__init__('api.pusherapp.com', 80, timeout=socket._GLOBAL_DEFAULT_TIMEOUT)
+    moxer.StubOutWithMock(http.client.HTTPConnection, '__init__')
+    http.client.HTTPConnection.__init__('api.pusherapp.com', 80, timeout=socket._GLOBAL_DEFAULT_TIMEOUT)
 
-    moxer.StubOutWithMock(httplib.HTTPConnection, 'request')
-    method_to_stub = httplib.HTTPConnection.request
+    moxer.StubOutWithMock(http.client.HTTPConnection, 'request')
+    method_to_stub = http.client.HTTPConnection.request
     if request_args:
         method_to_stub(*request_args)
     else:
         method_to_stub(mox.IgnoreArg(), mox.IgnoreArg(), mox.IgnoreArg(), mox.IgnoreArg())
 
-    moxer.StubOutWithMock(httplib.HTTPConnection, 'getresponse')
-    mock_response = moxer.CreateMock(httplib.HTTPResponse)
-    httplib.HTTPConnection.getresponse().AndReturn(mock_response)
+    moxer.StubOutWithMock(http.client.HTTPConnection, 'getresponse')
+    mock_response = moxer.CreateMock(http.client.HTTPResponse)
+    http.client.HTTPConnection.getresponse().AndReturn(mock_response)
     mock_response.status = response_status
     mock_response.read().AndReturn(body)
     moxer.StubOutWithMock(time, 'time')

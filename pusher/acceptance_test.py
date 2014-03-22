@@ -1,4 +1,4 @@
-import unittest, re, httplib, time, cgi
+import unittest, re, http.client, time, cgi
 from nose.tools import *
 
 import sys

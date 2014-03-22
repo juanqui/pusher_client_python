@@ -1,11 +1,11 @@
 import os
 import sys
 import time
-import httplib
+import http.client
 import hmac
 import json
 import hashlib
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import re
 import socket
 
@@ -45,7 +45,7 @@ class Pusher(object):
         self._channels = {}
 
     def __getitem__(self, key):
-        if not self._channels.has_key(key):
+        if key not in self._channels:
             return self._make_channel(key)
         return self._channels[key]
 
@@ -59,7 +59,7 @@ class Channel(object):
         self.name = str(name)
         if not channel_name_re.match(self.name):
             raise NameError("Invalid channel id: %s" % self.name)
-        self.path = '/apps/%s/channels/%s/events' % (self.pusher.app_id, urllib.quote(self.name))
+        self.path = '/apps/%s/channels/%s/events' % (self.pusher.app_id, urllib.parse.quote(self.name))
 
     def trigger(self, event, data={}, socket_id=None, timeout=socket._GLOBAL_DEFAULT_TIMEOUT):
         json_data = json.dumps(data, cls=self.pusher.encoder)
@@ -89,11 +89,11 @@ class Channel(object):
         hash_str = hasher.hexdigest()
         ret = "auth_key=%s&auth_timestamp=%s&auth_version=1.0&body_md5=%s&name=%s" % (self.pusher.key, int(time.time()), hash_str, event)
         if socket_id:
-            ret += "&socket_id=" + unicode(socket_id)
+            ret += "&socket_id=" + str(socket_id)
         return ret
 
     def send_request(self, signed_path, data_string, timeout=socket._GLOBAL_DEFAULT_TIMEOUT):
-        http = httplib.HTTPConnection(self.pusher.host, self.pusher.port, timeout=timeout)
+        http = http.client.HTTPConnection(self.pusher.host, self.pusher.port, timeout=timeout)
         http.request('POST', signed_path, data_string, {'Content-Type': 'application/json'})
         resp = http.getresponse()
         return resp.status, resp.read()

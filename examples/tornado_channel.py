@@ -26,7 +26,7 @@ pusher.channel_type = pusher.TornadoChannel
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         def callback(response):
-            print "Callback run. Response: %s" % repr(response)
+            print("Callback run. Response: %s" % repr(response))
 
         p = pusher.Pusher()
         # You can receive this event on the app keys page.
@@ -40,5 +40,5 @@ application = tornado.web.Application([
 
 if __name__ == "__main__":
     application.listen(8888)
-    print "Started, visit http://localhost:8888 in your browser to trigger an event"
+    print("Started, visit http://localhost:8888 in your browser to trigger an event")
     tornado.ioloop.IOLoop.instance().start()
